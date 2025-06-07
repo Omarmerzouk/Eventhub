@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Erreur de connexion - EventHub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #1e3a8a, #1e40af, #2563eb);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .error-card {
+            background: white;
+            border-radius: 20px;
+            padding: 50px 40px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .error-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981);
+        }
+
+        .error-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #fee2e2, #fef3c7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            position: relative;
+        }
+
+        .error-icon i {
+            font-size: 48px;
+            color: #ef4444;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .error-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 15px;
+        }
+
+        .error-message {
+            font-size: 16px;
+            color: #6b7280;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .error-details {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .error-details h4 {
+            color: #dc2626;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .error-details ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .error-details li {
+            color: #7f1d1d;
+            font-size: 14px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .error-details li::before {
+            content: '•';
+            color: #dc2626;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #374151;
+            border: 2px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+            border-color: #d1d5db;
+            transform: translateY(-1px);
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: #2563eb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .brand-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+
+        .help-text {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        .help-text a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .help-text a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .error-card {
+                padding: 40px 30px;
+                margin: 20px;
+            }
+
+            .error-title {
+                font-size: 24px;
+            }
+
+            .action-buttons {
+                gap: 12px;
+            }
+
+            .btn {
+                padding: 12px 24px;
+                font-size: 15px;
+            }
+        }
+
+        /* Animation d'entrée */
+        .error-card {
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="error-card">
+            <div class="brand-logo">
+                <div class="logo">⭐</div>
+                <div class="brand-name">EventHub</div>
+            </div>
+
+            <div class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+
+            <h1 class="error-title">Échec de la connexion</h1>
+            <p class="error-message">
+                Nous n'avons pas pu vous connecter à votre compte. Veuillez vérifier vos informations de connexion.
+            </p>
+
+            <div class="error-details">
+                <h4>
+                    <i class="fas fa-info-circle"></i>
+                    Causes possibles :
+                </h4>
+                <ul>
+                    <li>Adresse email incorrecte ou inexistante</li>
+                    <li>Mot de passe incorrect</li>
+                    <li>Compte non activé ou suspendu</li>
+                    <li>Trop de tentatives de connexion</li>
+                </ul>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="retryLogin()">
+                    <i class="fas fa-redo"></i>
+                    Réessayer la connexion
+                </button>
+                
+                <a href="index.php" class="btn btn-secondary">
+                    <i class="fas fa-home"></i>
+                    Retour à l'accueil
+                </a>
+            </div>
+
+            <div class="help-text">
+                Besoin d'aide ? <a href="#" onclick="openSupport()">Contactez notre support</a> ou 
+                <a href="#" onclick="resetPassword()">réinitialisez votre mot de passe</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function retryLogin() {
+            // Rediriger vers la page principale avec ouverture automatique du modal de connexion
+            window.location.href = 'index.php?modal=login';
+        }
+
+        function openSupport() {
+            // Ouvrir une fenêtre de support ou rediriger vers une page d'aide
+            alert('Contactez-nous à support@eventhub.com ou au +33 1 23 45 67 89');
+        }
+
+        function resetPassword() {
+            // Rediriger vers une page de réinitialisation de mot de passe
+            window.location.href = 'reset-password.php';
+        }
+
+        // Animation au chargement de la page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ajouter un léger délai pour l'animation
+            setTimeout(() => {
+                document.querySelector('.error-card').style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    document.querySelector('.error-card').style.transform = 'scale(1)';
+                }, 100);
+            }, 300);
+        });
+
+        // Gestion des paramètres URL pour afficher des messages spécifiques
+        const urlParams = new URLSearchParams(window.location.search);
+        const errorType = urlParams.get('error');
+
+        if (errorType) {
+            const errorMessage = document.querySelector('.error-message');
+            const errorDetails = document.querySelector('.error-details ul');
+
+            switch(errorType) {
+                case 'invalid_credentials':
+                    errorMessage.textContent = 'Email ou mot de passe incorrect. Veuillez vérifier vos informations.';
+                    errorDetails.innerHTML = `
+                        <li>Vérifiez que votre email est correctement saisi</li>
+                        <li>Assurez-vous que votre mot de passe est correct</li>
+                        <li>Respectez la casse (majuscules/minuscules)</li>
+                    `;
+                    break;
+                case 'account_not_found':
+                    errorMessage.textContent = 'Aucun compte trouvé avec cette adresse email.';
+                    errorDetails.innerHTML = `
+                        <li>Vérifiez l'orthographe de votre email</li>
+                        <li>Créez un compte si vous n'en avez pas</li>
+                        <li>Contactez le support si le problème persiste</li>
+                    `;
+                    break;
+                case 'account_suspended':
+                    errorMessage.textContent = 'Votre compte a été temporairement suspendu.';
+                    errorDetails.innerHTML = `
+                        <li>Contactez notre équipe support</li>
+                        <li>Vérifiez vos emails pour plus d'informations</li>
+                        <li>Respectez les conditions d'utilisation</li>
+                    `;
+                    break;
+                case 'too_many_attempts':
+                    errorMessage.textContent = 'Trop de tentatives de connexion. Veuillez patienter quelques minutes.';
+                    errorDetails.innerHTML = `
+                        <li>Attendez 15 minutes avant de réessayer</li>
+                        <li>Vérifiez vos informations de connexion</li>
+                        <li>Réinitialisez votre mot de passe si nécessaire</li>
+                    `;
+                    break;
+            }
+        }
+    </script>
+</body>
+</html>
