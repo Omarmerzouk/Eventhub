@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 ?>
@@ -10,7 +9,6 @@ session_start();
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>EventHub - Plateforme d'Événements</title>
     <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="scripts.js" />
 </head>
 <body>
     <!-- Header -->
@@ -204,7 +202,7 @@ session_start();
       <input type="password" id="password" name="password" placeholder="Votre mot de passe" required>
 
       <br><br>
-      <button type="submit" class="btn-primary btn-full">S’inscrire</button>
+      <button type="submit" class="btn-primary btn-full">S'inscrire</button>
     </form>
 
   </div>
@@ -374,6 +372,6 @@ session_start();
 
     <!-- Required Lovable script for new features -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
