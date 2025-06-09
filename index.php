@@ -208,12 +208,6 @@ session_start();
   </div>
 </div>
 
-
-
-
-
-  
-
     <!-- Modal de création d'événement -->
     <div id="createEventModal" class="modal">
         <div class="modal-content">
@@ -321,14 +315,6 @@ session_start();
   </div>
 </div>
 
-
-
-
-
-
-
-
-
     <!-- Modal de paiement -->
     <div id="paymentModal" class="modal">
         <div class="modal-content">
@@ -370,8 +356,7 @@ session_start();
     <!-- Toast notification -->
     <div id="toast" class="toast"></div>
 
-    <!-- Required Lovable script for new features -->
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
-    <script type="module" src="script.js"></script>
+    <!-- Script principal -->
+    <script src="script.js"></script>
 </body>
 </html>

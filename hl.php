@@ -38,9 +38,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["title"])) {
 }
 ?>
 
-
-
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -63,14 +60,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["title"])) {
                 <a href="#apropos" class="nav-link">À propos</a>
             </nav>
             <div class="nav-actions">
-
-
-    <!-- Utilisateur connecté -->
-    <button id="createEventBtn" class="btn-primary" onclick="openCreateEventModal()">➕ Créer un événement</button>
-    <form style="display:inline;" method="post" action="logout.php">
-        <a href="logout.php"><button type="submit" class="btn-ghost">🔓 Se déconnecter</button></a>
-    </form>
-
+                <!-- Utilisateur connecté -->
+                <button id="createEventBtn" class="btn-primary" onclick="openCreateEventModal()">➕ Créer un événement</button>
+                <form style="display:inline;" method="post" action="logout.php">
+                    <a href="logout.php"><button type="submit" class="btn-ghost">🔓 Se déconnecter</button></a>
+                </form>
             </div>
         </div>
     </header>
@@ -200,8 +194,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["title"])) {
             </div>
         </div>
     </section>
-
-  
 
 <div id="createEventModal" class="modal">
     <div class="modal-content">
@@ -338,8 +330,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["title"])) {
     <!-- Toast notification -->
     <div id="toast" class="toast"></div>
 
-    <!-- Required Lovable script for new features -->
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
-    <script type="module" src="script.js"></script>
+    <!-- Script principal -->
+    <script src="script.js"></script>
 </body>
 </html>
