@@ -500,7 +500,7 @@ function searchEvents() {
             event.location.toLowerCase().includes(query) ||
             event.country.toLowerCase().includes(query) ||
             event.type.toLowerCase().includes(query) ||
-            event.category.toLowerCase().includes(query)
+            event.description.toLowerCase().includes(query)
         );
         
         generateEvents();
@@ -518,6 +518,8 @@ function searchEvents() {
 // Génération des événements pour l'accueil (6 premiers)
 function generateHomeEvents() {
     const grid = document.getElementById('homeEventsGrid');
+    if (!grid) return;
+    
     const homeEvents = events.slice(0, 6);
     
     grid.innerHTML = homeEvents.map(event => 
@@ -564,7 +566,11 @@ function generateEvents() {
     const grid = document.getElementById('eventsGrid');
     const eventCount = document.getElementById('eventCount');
     
-    eventCount.textContent = filteredEvents.length;
+    if (!grid) return;
+    
+    if (eventCount) {
+        eventCount.textContent = filteredEvents.length;
+    }
     
     grid.innerHTML = filteredEvents.map(event => 
         `<div class="event-card" onclick="openEventModal(${event.id})">
@@ -608,7 +614,9 @@ function generateEvents() {
 // Gestion des filtres
 function toggleFilters() {
     const sidebar = document.getElementById('filtersSidebar');
-    sidebar.classList.toggle('open');
+    if (sidebar) {
+        sidebar.classList.toggle('open');
+    }
 }
 
 function applyFilters() {
@@ -631,11 +639,17 @@ function applyFilters() {
 
 // Modals
 function openModal(modalId) {
-    document.getElementById(modalId).style.display = 'block';
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'block';
+    }
 }
 
 function closeModal(modalId) {
-    document.getElementById(modalId).style.display = 'none';
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none';
+    }
 }
 
 function openLoginModal() {
@@ -645,16 +659,6 @@ function openLoginModal() {
 function openRegisterModal() {
     openModal('registerModal');
 }
-
-function openCreateEventModal() {
-    if (!isLoggedIn) {
-        showToast('Vous devez être connecté pour créer un événement', 'error');
-        openLoginModal();
-        return;
-    }
-    openModal('createEventModal');
-}
-
 
 function openCreateEventModal() {
     openModal('createEventModal');
@@ -724,6 +728,7 @@ function openEventModal(eventId) {
     currentEvent = event;
     
     const modalContent = document.getElementById('eventModalContent');
+    if (!modalContent) return;
 
     let commentsHtml = '';
     if (event.comments && event.comments.length > 0) {
@@ -807,28 +812,33 @@ function openEventModal(eventId) {
 }
 
 function submitComment() {
-    const commentText = document.getElementById("comment").value.trim();
-    const rating = document.getElementById("rating").value;
+    const commentText = document.getElementById("comment");
+    const rating = document.getElementById("rating");
     const commentList = document.getElementById("commentList");
 
-    if (!commentText) {
-        alert("Veuillez écrire un commentaire avant d'envoyer.");
+    if (!commentText || !rating || !commentList) return;
+
+    const commentValue = commentText.value.trim();
+    const ratingValue = rating.value;
+
+    if (!commentValue) {
+        showToast("Veuillez écrire un commentaire avant d'envoyer.", 'error');
         return;
     }
 
-    if (commentText.length > 100) {
-        alert("Le commentaire ne doit pas dépasser 100 caractères.");
+    if (commentValue.length > 100) {
+        showToast("Le commentaire ne doit pas dépasser 100 caractères.", 'error');
         return;
     }
 
-    if (!rating) {
-        alert("Veuillez sélectionner une note.");
+    if (!ratingValue) {
+        showToast("Veuillez sélectionner une note.", 'error');
         return;
     }
 
     // Ajouter le commentaire au tableau de l'événement actuel
     if (!currentEvent.comments) currentEvent.comments = [];
-    currentEvent.comments.push(`${commentText} - ${rating}⭐`);
+    currentEvent.comments.push(`${commentValue} - ${ratingValue}⭐`);
 
     // Afficher le nouveau commentaire
     const commentElement = document.createElement("div");
@@ -837,12 +847,14 @@ function submitComment() {
     commentElement.style.background = "#e5e7eb";
     commentElement.style.borderRadius = "6px";
     commentElement.style.color = "#374151";
-    commentElement.innerHTML = `🗨️ ${commentText} <span style="float:right;">${rating}⭐</span>`;
+    commentElement.innerHTML = `🗨️ ${commentValue} <span style="float:right;">${ratingValue}⭐</span>`;
     commentList.appendChild(commentElement);
 
     // Réinitialiser le formulaire
-    document.getElementById("comment").value = "";
-    document.getElementById("rating").value = "";
+    commentText.value = "";
+    rating.value = "";
+    
+    showToast("Commentaire ajouté avec succès!");
 }
 
 // Réservation d'événement
@@ -861,8 +873,11 @@ function reserveEvent() {
 function openPaymentModal() {
     if (!currentEvent) return;
     
-    document.getElementById('paymentEventTitle').textContent = currentEvent.title;
-    document.getElementById('paymentPrice').textContent = currentEvent.price;
+    const titleElement = document.getElementById('paymentEventTitle');
+    const priceElement = document.getElementById('paymentPrice');
+    
+    if (titleElement) titleElement.textContent = currentEvent.title;
+    if (priceElement) priceElement.textContent = currentEvent.price;
     
     openModal('paymentModal');
 }
@@ -873,25 +888,29 @@ function processPayment(event) {
     
     // Simulation du traitement du paiement
     const formData = new FormData(event.target);
-    const cardNumber = formData.get('cardNumber') || event.target.querySelector('input[placeholder*="1234"]').value;
+    const cardNumber = formData.get('cardNumber') || event.target.querySelector('input[placeholder*="1234"]')?.value || '';
     
-    if (cardNumber.length < 16) {
+    if (cardNumber.replace(/\s/g, '').length < 16) {
         showToast('Numéro de carte invalide', 'error');
         return;
     }
     
     // Simulation d'un délai de traitement
     const submitBtn = event.target.querySelector('button[type="submit"]');
-    submitBtn.textContent = 'Traitement en cours...';
-    submitBtn.disabled = true;
+    if (submitBtn) {
+        submitBtn.textContent = 'Traitement en cours...';
+        submitBtn.disabled = true;
+    }
     
     setTimeout(() => {
         closeModal('paymentModal');
         showToast(`Paiement réussi! Réservation confirmée pour: ${currentEvent.title}`);
         
         // Réinitialiser le bouton
-        submitBtn.textContent = 'Confirmer le paiement';
-        submitBtn.disabled = false;
+        if (submitBtn) {
+            submitBtn.textContent = 'Confirmer le paiement';
+            submitBtn.disabled = false;
+        }
         
         // Réinitialiser le formulaire
         event.target.reset();
@@ -916,6 +935,8 @@ function register(event) {
 // Toast notifications
 function showToast(message, type = 'success') {
     const toast = document.getElementById('toast');
+    if (!toast) return;
+    
     toast.textContent = message;
     toast.className = `toast ${type}`;
     toast.classList.add('show');
