@@ -1,4 +1,4 @@
-// Données des 25 événements
+// Données des 30 événements
 const events = [
     {
         id: 1,
@@ -424,6 +424,91 @@ const events = [
         type: 'Conférence',
         format: 'Présentiel',
         image: 'https://images.unsplash.com/photo-1607197109166-3ab4ee4b00fc?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+        id: 26,
+        title: 'Conférence DevOps & Cloud Computing',
+        description: 'Maîtrisez les outils et pratiques DevOps pour optimiser vos déploiements cloud',
+        date: '30 septembre 2024',
+        location: 'Lyon, France',
+        country: 'France',
+        participants: 280,
+        rating: 4.6,
+        reviews: 94,
+        price: '320€',
+        priceCategory: 'Payant',
+        organizer: 'CloudTech Solutions',
+        type: 'Conférence',
+        format: 'En ligne',
+        image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+        id: 27,
+        title: 'Workshop: Intelligence Artificielle pour les PME',
+        description: 'Comment intégrer l\'IA dans votre petite ou moyenne entreprise sans gros budget',
+        date: '5 octobre 2024',
+        location: 'Toulouse, France',
+        country: 'France',
+        participants: 65,
+        rating: 4.7,
+        reviews: 41,
+        price: '180€',
+        priceCategory: 'Payant',
+        organizer: 'AI for Business',
+        type: 'Workshop',
+        format: 'Présentiel',
+        image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+        id: 28,
+        title: 'Séminaire: Transition Énergétique en Europe',
+        description: 'Stratégies et politiques pour accélérer la transition vers les énergies renouvelables',
+        date: '10 octobre 2024',
+        location: 'Bruxelles, Belgique',
+        country: 'Belgique',
+        participants: 195,
+        rating: 4.5,
+        reviews: 73,
+        price: 'Gratuit',
+        priceCategory: 'Gratuit',
+        organizer: 'European Energy Alliance',
+        type: 'Séminaire',
+        format: 'Présentiel',
+        image: 'https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+        id: 29,
+        title: 'Formation: Blockchain pour les développeurs',
+        description: 'Développez vos premières applications décentralisées avec Ethereum et Solidity',
+        date: '15 octobre 2024',
+        location: 'Marseille, France',
+        country: 'France',
+        participants: 35,
+        rating: 4.8,
+        reviews: 27,
+        price: '650€',
+        priceCategory: 'Payant',
+        organizer: 'Blockchain Academy',
+        type: 'Formation',
+        format: 'En ligne',
+        image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&w=800&q=80'
+    },
+    {
+        id: 30,
+        title: 'Networking: Women in Tech Europe',
+        description: 'Rencontrez des femmes leaders dans la technologie et développez votre réseau professionnel',
+        date: '20 octobre 2024',
+        location: 'Amsterdam, Pays-Bas',
+        country: 'Pays-Bas',
+        participants: 120,
+        rating: 4.9,
+        reviews: 68,
+        price: '30€',
+        priceCategory: 'Payant',
+        organizer: 'Women Tech Network',
+        type: 'Networking',
+        format: 'Présentiel',
+        image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80'
     }
 ];
 

@@ -59,15 +59,15 @@ session_start();
                     
                     <div class="stats">
                         <div>
-                            <div class="stat-number">25+</div>
+                            <div class="stat-number">30+</div>
                             <div class="stat-label">Événements disponibles</div>
                         </div>
                         <div>
-                            <div class="stat-number">10K+</div>
+                            <div class="stat-number">12K+</div>
                             <div class="stat-label">Participants</div>
                         </div>
                         <div>
-                            <div class="stat-number">15</div>
+                            <div class="stat-number">18</div>
                             <div class="stat-label">Pays</div>
                         </div>
                     </div>
@@ -92,7 +92,7 @@ session_start();
     <section id="evenements">
         <div class="container">
             <div class="section-header">
-                <h2>Tous les événements (<span id="eventCount">25</span>)</h2>
+                <h2>Tous les événements (<span id="eventCount">30</span>)</h2>
                 <button class="btn-filter" onclick="toggleFilters()">🔽 Filtres</button>
             </div>
             
@@ -107,6 +107,9 @@ session_start();
                         <label><input type="checkbox" value="Royaume-Uni"> Royaume-Uni</label>
                         <label><input type="checkbox" value="Suisse"> Suisse</label>
                         <label><input type="checkbox" value="Belgique"> Belgique</label>
+                        <label><input type="checkbox" value="Pays-Bas"> Pays-Bas</label>
+                        <label><input type="checkbox" value="Espagne"> Espagne</label>
+                        <label><input type="checkbox" value="Italie"> Italie</label>
                     </div>
                     
                     <div class="filter-group">
