@@ -227,7 +227,30 @@ function openCreateEventModal() {
     openModal('createEventModal');
 }
 
-
+// Fonction pour basculer les champs selon le format d'événement
+function toggleLocationFields() {
+    const formatRadios = document.querySelectorAll('input[name="format"]');
+    const locationLinkLabel = document.getElementById('locationLinkLabel');
+    const locationLinkInput = document.getElementById('locationLinkInput');
+    const locationHelpText = document.getElementById('locationHelpText');
+    
+    let selectedFormat = '';
+    formatRadios.forEach(radio => {
+        if (radio.checked) {
+            selectedFormat = radio.value;
+        }
+    });
+    
+    if (selectedFormat === 'Présentiel') {
+        locationLinkLabel.textContent = 'Adresse complète *';
+        locationLinkInput.placeholder = 'Adresse complète du lieu';
+        locationHelpText.textContent = 'Indiquez l\'adresse complète où se déroulera l\'événement';
+    } else if (selectedFormat === 'En ligne') {
+        locationLinkLabel.textContent = 'Lien de connexion *';
+        locationLinkInput.placeholder = 'https://meet.google.com/... ou https://zoom.us/...';
+        locationHelpText.textContent = 'Indiquez le lien de connexion (Meet, Zoom, Teams, etc.)';
+    }
+}
 
 function updateAuthState(loggedIn) {
     isLoggedIn = loggedIn;
@@ -314,6 +337,8 @@ function openEventModal(eventId) {
             const safeDescription = escapeHtml(event.description);
             const safeLieu = escapeHtml(event.lieu);
             const safeOrganizer = escapeHtml(event.organizer || 'EventHub');
+            const safeSessionInfo = event.session_info ? escapeHtml(event.session_info) : '';
+            const safeLocationLink = event.lien_localisation ? escapeHtml(event.lien_localisation) : '';
             
             // Construction du HTML des commentaires
             let commentsHtml = '';
@@ -324,6 +349,49 @@ function openEventModal(eventId) {
                 });
                 commentsHtml += '</ul></div>';
             }
+
+            // Affichage des informations de session si disponibles
+            let sessionInfoHtml = '';
+            if (safeSessionInfo) {
+                sessionInfoHtml = `
+                    <div style="margin-bottom: 20px; background: #f0f9ff; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+                        <h4 style="color: #1e40af; margin-bottom: 8px;"><i class="fas fa-list-ul"></i> Programme des sessions</h4>
+                        <p style="color: #1e40af; margin: 0; white-space: pre-line;">${safeSessionInfo}</p>
+                    </div>
+                `;
+            }
+
+            // Affichage du lien/localisation selon le format
+            let locationInfoHtml = '';
+            if (safeLocationLink) {
+                if (event.format === 'En ligne') {
+                    locationInfoHtml = `
+                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                            <i class="fas fa-link" style="width: 20px; margin-right: 10px; color: #6b7280;"></i>
+                            <a href="${safeLocationLink}" target="_blank" style="color: #2563eb; text-decoration: none;">${safeLocationLink}</a>
+                        </div>
+                    `;
+                } else {
+                    locationInfoHtml = `
+                        <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                            <i class="fas fa-map-marker-alt" style="width: 20px; margin-right: 10px; color: #6b7280;"></i>
+                            <span>${safeLocationLink}</span>
+                        </div>
+                    `;
+                }
+            }
+
+            // Affichage de la capacité si disponible
+            let capacityHtml = '';
+            if (event.capacite) {
+                capacityHtml = `
+                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <i class="fas fa-user-friends" style="width: 20px; margin-right: 10px; color: #6b7280;"></i>
+                        <span>Capacité maximale: ${event.capacite} personnes</span>
+                    </div>
+                `;
+            }
+            
             // Mise à jour du contenu de la modal
             const modalContent = document.getElementById('eventModalContent');
             modalContent.innerHTML = `
@@ -351,6 +419,8 @@ function openEventModal(eventId) {
                         <h3 style="font-size: 24px; margin-bottom: 15px; color: #1f2937;">${safeTitle}</h3>
                         <p style="color: #6b7280; margin-bottom: 20px; line-height: 1.6;">${safeDescription}</p>
                         
+                        ${sessionInfoHtml}
+                        
                         <div style="margin-bottom: 20px;">
                             <div style="display: flex; align-items: center; margin-bottom: 10px;">
                                 <i class="fas fa-calendar" style="width: 20px; margin-right: 10px; color: #6b7280;"></i>
@@ -360,10 +430,12 @@ function openEventModal(eventId) {
                                 <i class="fas fa-map-marker-alt" style="width: 20px; margin-right: 10px; color: #6b7280;"></i>
                                 <span>${safeLieu}</span>
                             </div>
+                            ${locationInfoHtml}
                             <div style="display: flex; align-items: center; margin-bottom: 10px;">
                                 <i class="fas fa-users" style="width: 20px; margin-right: 10px; color: #6b7280;"></i>
                                 <span>${event.participants} participants</span>
                             </div>
+                            ${capacityHtml}
                             <div style="display: flex; align-items: center; margin-bottom: 10px;">
                                 <i class="fas fa-building" style="width: 20px; margin-right: 10px; color: #6b7280;"></i>
                                 <span>Organisé par ${safeOrganizer}</span>
@@ -386,7 +458,7 @@ function openEventModal(eventId) {
                         </div>
                         
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 30px;">
-                            <div style="font-size: 28px; font-weight: bold; color: #059669;">${event.prix}€</div>
+                            <div style="font-size: 28px; font-weight: bold; color: #059669;">${event.prix == 0 ? 'Gratuit' : event.prix + '€'}</div>
                             <button onclick="reserveEvent()" class="btn-primary" style="padding: 12px 24px; font-size: 16px;">
                                 Réserver ma place
                             </button>
@@ -405,10 +477,10 @@ function openEventModal(eventId) {
 // Fonction utilitaire pour échapper le HTML
 function escapeHtml(unsafe) {
     return unsafe
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
+        .replace(/&/g, "&")
+        .replace(/</g, "<")
+        .replace(/>/g, ">")
+        .replace(/"/g, """)
         .replace(/'/g, "&#039;");
 }
     

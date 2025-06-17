@@ -1,4 +1,3 @@
-
 <?php
 session_start(); // important !
 
@@ -27,12 +26,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["title"])) {
     $format = $_POST['format'];
     $image = !empty($_POST['imageUrl']) ? $_POST['imageUrl'] : null;
     $date_creation = date('Y-m-d H:i:s');
+    
+    // Nouveaux champs
+    $session_info = !empty($_POST['sessionInfo']) ? $_POST['sessionInfo'] : null;
+    $capacite = !empty($_POST['capacity']) ? $_POST['capacity'] : null;
+    $lien_localisation = !empty($_POST['locationLink']) ? $_POST['locationLink'] : null;
 
     // Insertion dans la base
-    $sql = "INSERT INTO evenement (titre, description, date, lieu, prix, organisateur_id, type, format, image, date_creation)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO evenement (titre, description, date, lieu, prix, organisateur_id, type, format, image, date_creation, session_info, capacite, lien_localisation)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$titre, $description, $date, $lieu, $prix, $organisateur_id, $type, $format, $image, $date_creation]);
+    $stmt->execute([$titre, $description, $date, $lieu, $prix, $organisateur_id, $type, $format, $image, $date_creation, $session_info, $capacite, $lien_localisation]);
 
     // Redirection ou confirmation
     header("Location: hl.php?success=1");
@@ -353,19 +357,44 @@ echo "<div class=\"event-card\" onclick=\"openEventModal('{$event['id']}')\">";
                 <h3>Format de l'événement</h3>
                 <div class="radio-group">
                     <label class="radio-option">
-                        <input type="radio" name="format" value="Présentiel" required>
+                        <input type="radio" name="format" value="Présentiel" required onchange="toggleLocationFields()">
                         <div>
                             <strong>Présentiel</strong>
                             <p>Événement en personne dans un lieu physique</p>
                         </div>
                     </label>
                     <label class="radio-option">
-                        <input type="radio" name="format" value="En ligne" required>
+                        <input type="radio" name="format" value="En ligne" required onchange="toggleLocationFields()">
                         <div>
                             <strong>En ligne</strong>
                             <p>Événement virtuel accessible depuis n'importe où</p>
                         </div>
                     </label>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Détails de localisation/accès</h3>
+                <div class="form-group">
+                    <label for="locationLink" id="locationLinkLabel">Adresse complète / Lien de connexion *</label>
+                    <input type="text" name="locationLink" id="locationLinkInput" placeholder="Adresse complète ou lien Meet/Zoom" required>
+                    <small id="locationHelpText" class="form-help-text">Pour un événement présentiel, indiquez l'adresse complète. Pour un événement en ligne, indiquez le lien de connexion (Meet, Zoom, etc.)</small>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Capacité et sessions</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="capacity">Capacité maximale</label>
+                        <input type="number" name="capacity" min="1" placeholder="ex: 50">
+                        <small class="form-help-text">Nombre maximum de participants (optionnel)</small>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="sessionInfo">Informations sur les sessions (optionnel)</label>
+                    <textarea name="sessionInfo" rows="3" placeholder="Décrivez les différentes sessions, ateliers ou parties de votre événement..."></textarea>
+                    <small class="form-help-text">Détaillez le programme, les sessions ou ateliers prévus</small>
                 </div>
             </div>
 

@@ -291,7 +291,7 @@ echo "<div class=\"event-card\" onclick=\"openEventModal('{$event['id']}')\">";
       <input type="password" id="password" name="password" placeholder="Votre mot de passe" required>
 
       <br><br>
-      <button type="submit" class="btn-primary btn-full">S’inscrire</button>
+      <button type="submit" class="btn-primary btn-full">S'inscrire</button>
     </form>
 
   </div>
