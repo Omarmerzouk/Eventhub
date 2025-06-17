@@ -23,48 +23,58 @@
             justify-content: center;
         }
 
-        .container {
-            max-width: 500px;
+.container {
+            max-width: 800px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 20px;
+            width: 100%;
         }
-
         .error-card {
             background: white;
-            border-radius: 20px;
-            padding: 50px 40px;
+            border-radius: 15px;
+            padding: 40px;
             text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             position: relative;
             overflow: hidden;
+            width: 100%;
         }
-
-        .error-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981);
-        }
-
-        .error-icon {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, #fee2e2, #fef3c7);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 30px;
-            position: relative;
-        }
-
-        .error-icon i {
-            font-size: 48px;
-            color: #ef4444;
-            animation: shake 0.5s ease-in-out;
+        /* ... autres styles inchangés ... */
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .error-card {
+                padding: 30px 20px;
+                margin: 10px;
+                border-radius: 10px;
+            }
+            .error-title {
+                font-size: 22px;
+            }
+            .error-message {
+                font-size: 15px;
+            }
+            .error-details {
+                padding: 15px;
+            }
+            .btn {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+            .brand-logo {
+                margin-bottom: 20px;
+            }
+            .error-icon {
+                width: 80px;
+                height: 80px;
+                margin-bottom: 20px;
+            }
+            .error-icon i {
+                font-size: 36px;
+            }
         }
 
         @keyframes shake {
@@ -294,9 +304,8 @@
                 </a>
             </div>
 
-            <div class="help-text">
-                Besoin d'aide ? <a href="#" onclick="openSupport()">Contactez notre support</a> ou 
-                <a href="#" onclick="resetPassword()">réinitialisez votre mot de passe</a>
+          <div class="help-text">
+                Besoin d'aide ? <a href="#" onclick="openSupport()">Contactez notre support</a>
             </div>
         </div>
     </div>
