@@ -1,7 +1,34 @@
 <?php
-session_start();
+$host = 'localhost';
+$dbname = 'eventhub';
+$user = 'root';
+$password = '';
+try {
+    $conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $user, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch(PDOException $e) {
+    die("Erreur de connexion : " . $e->getMessage());
+}
+// Récupération des événements depuis la base de données
+$sql_fetch_events = "SELECT * FROM evenement ORDER BY date_creation DESC";
+$stmt_fetch_events = $conn->query($sql_fetch_events);
+$db_events = $stmt_fetch_events->fetchAll(PDO::FETCH_ASSOC);
+// Conversion du prix en format d'affichage
+foreach ($db_events as &$event) {
+    $event['price'] = ($event['prix'] == 0) ? 'Gratuit' : $event['prix'] . '€';
+    $event['priceCategory'] = ($event['prix'] == 0) ? 'Gratuit' : 'Payant';
+    // Formatage de la date
+    $eventDate = new DateTime($event['date']);
+    $event['date'] = $eventDate->format('d F Y H:i');
+    // Ajout de données factices si non présentes dans la BD
+    $event['participants'] = $event['participants'] ?? rand(50, 500);
+    $event['rating'] = $event['rating'] ?? number_format(rand(40, 50) / 10, 1);
+    $event['reviews'] = $event['reviews'] ?? rand(20, 150);
+    $event['organizer'] = $event['organizer'] ?? 'Organisateur EventHub';
+}
+unset($event); // Supprime la référence
+$event_count = count($db_events);
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -9,6 +36,8 @@ session_start();
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>EventHub - Plateforme d'Événements</title>
     <link rel="stylesheet" href="styles.css" />
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <!-- Header -->
@@ -19,23 +48,17 @@ session_start();
                 <h1>EventHub</h1>
             </div>
             <nav class="nav-menu">
-                <a href="#accueil" class="nav-link">Accueil</a>
-                <a href="#evenements" class="nav-link">Événements</a>
-                <a href="#apropos" class="nav-link">À propos</a>
+    <a href="#accueil" class="nav-link" onclick="showSection('accueil')">Accueil</a>
+                <a href="#evenements" class="nav-link" onclick="showSection('evenements')">Événements</a>
+                <a href="#apropos" class="nav-link" onclick="showSection('apropos')">À propos</a>
             </nav>
             <div class="nav-actions">
 
-<?php if (isset($_SESSION['user'])): ?>
-    <!-- Utilisateur connecté -->
-    <button id="createEventBtn" class="btn-primary" onclick="openCreateEventModal()">➕ Créer un événement</button>
-    <form style="display:inline;" method="post" action="logout.php">
-        <a href="logout.php"><button type="submit" class="btn-ghost">🔓 Se déconnecter</button></a>
-    </form>
-<?php else: ?>
+
     <!-- Utilisateur non connecté -->
     <button class="btn-ghost" onclick="openLoginModal()">🔐 Se connecter</button>
     <button class="btn-primary" onclick="openRegisterModal()">📝 S'inscrire</button>
-<?php endif; ?>
+
 
             </div>
         </div>
@@ -59,15 +82,15 @@ session_start();
                     
                     <div class="stats">
                         <div>
-                            <div class="stat-number">30+</div>
+                            <div class="stat-number">25+</div>
                             <div class="stat-label">Événements disponibles</div>
                         </div>
                         <div>
-                            <div class="stat-number">12K+</div>
+                            <div class="stat-number">10K+</div>
                             <div class="stat-label">Participants</div>
                         </div>
                         <div>
-                            <div class="stat-number">18</div>
+                            <div class="stat-number">15</div>
                             <div class="stat-label">Pays</div>
                         </div>
                     </div>
@@ -82,36 +105,71 @@ session_start();
                     <h2>Événements à la une</h2>
                     <button class="btn-filter" onclick="showSection('evenements')">Voir tous les événements</button>
                 </div>
-                <div id="homeEventsGrid" class="events-grid"></div>
+                <div id="homeEventsGrid" class="events-grid">
+                     <?php
+                    // Display first 6 events from DB on home page
+                    $home_events = array_slice($db_events, 0, 6);
+                    foreach ($home_events as $event) {
+                        $format_class = ($event['format'] === 'Présentiel') ? 'format-presentiel' : 'format-enligne';
+echo "<div class=\"event-card\" onclick=\"openEventModal('{$event['id']}')\">";
+                        echo "<img src=\"{$event['image']}\" alt=\"{$event['titre']}\" class=\"event-image\">";
+                        echo "<div class=\"event-content\">";
+                        echo "<div class=\"event-header\">";
+                        echo "<span class=\"event-type\">{$event['type']}</span>";
+                        echo "<span class=\"event-format {$format_class}\">{$event['format']}</span>";
+                        echo "</div>";
+                        echo "<h3 class=\"event-title\">{$event['titre']}</h3>";
+                        echo "<p class=\"event-description\">{$event['description']}</p>";
+                        echo "<div class=\"event-details\">";
+                        echo "<div class=\"event-detail\"><i class=\"fas fa-calendar\"></i><span>{$event['date']}</span></div>";
+                        echo "<div class=\"event-detail\"><i class=\"fas fa-map-marker-alt\"></i><span>{$event['lieu']}</span></div>";
+                        echo "<div class=\"event-detail\"><i class=\"fas fa-users\"></i><span>{$event['participants']} participants</span></div>";
+                        echo "</div>";
+                        echo "<div class=\"event-footer\">";
+                        echo "<div class=\"event-rating\"><span>⭐</span><span>{$event['rating']}</span><span style=\"color: #6b7280; font-size: 14px;\">({$event['reviews']} avis)</span></div>";
+                        echo "<div class=\"event-price\">{$event['price']}</div>";
+                        echo "</div>";
+                        echo "</div>";
+                        echo "</div>";
+                    }
+                    ?>
+                </div>
             </div>
         </section>
     </section>
                 
 
-    <!-- Section Événements -->
+     <!-- Section Événements -->
     <section id="evenements">
         <div class="container">
             <div class="section-header">
-                <h2>Tous les événements (<span id="eventCount">30</span>)</h2>
+                <h2>Tous les événements (<span id="eventCount"><?php echo $event_count; ?></span>)</h2>
+                <!-- Filters button - functionality will be limited without server-side filtering -->
                 <button class="btn-filter" onclick="toggleFilters()">🔽 Filtres</button>
             </div>
-            
+
             <div class="events-layout">
+                <!-- Filters Sidebar - functionality will be limited without server-side filtering -->
                 <div id="filtersSidebar" class="filters-sidebar">
                     <h3>Filtres</h3>
-                    
+
                     <div class="filter-group">
                         <h4>Pays</h4>
+                        <label><input type="checkbox" value="Finlande"> Finlande</label>
+                        <label><input type="checkbox" value="Portugal"> Portugal</label>
+                        <label><input type="checkbox" value="Norvège"> Norvège</label>
+                        <label><input type="checkbox" value="États-Unis">États-Unis</label>
+                        <label><input type="checkbox" value="Italie">Italie</label>
+                        <label><input type="checkbox" value="Autriche">Autriche</label>
                         <label><input type="checkbox" value="France"> France</label>
                         <label><input type="checkbox" value="Allemagne"> Allemagne</label>
                         <label><input type="checkbox" value="Royaume-Uni"> Royaume-Uni</label>
+                        <label><input type="checkbox" value="Suède"> Suède</label>
                         <label><input type="checkbox" value="Suisse"> Suisse</label>
+                        <label><input type="checkbox" value="République Tchèque"> République Tchèque</label>
                         <label><input type="checkbox" value="Belgique"> Belgique</label>
-                        <label><input type="checkbox" value="Pays-Bas"> Pays-Bas</label>
-                        <label><input type="checkbox" value="Espagne"> Espagne</label>
-                        <label><input type="checkbox" value="Italie"> Italie</label>
                     </div>
-                    
+
                     <div class="filter-group">
                         <h4>Type d'événement</h4>
                         <label><input type="checkbox" value="Conférence"> Conférence</label>
@@ -120,21 +178,49 @@ session_start();
                         <label><input type="checkbox" value="Formation"> Formation</label>
                         <label><input type="checkbox" value="Networking"> Networking</label>
                     </div>
-                    
+
                     <div class="filter-group">
                         <h4>Prix</h4>
                         <label><input type="checkbox" value="Gratuit"> Gratuit</label>
                         <label><input type="checkbox" value="Payant"> Payant</label>
                     </div>
-                    
+
                     <button class="btn-primary btn-full" onclick="applyFilters()">Appliquer les filtres</button>
                 </div>
-                
-                <div id="eventsGrid" class="events-grid"></div>
+     <div id="eventsGrid" class="events-grid">
+         <?php
+         // Display all events from DB on events page
+         foreach ($db_events as $event) {
+             $format_class = ($event['format'] === 'Présentiel') ? 'format-presentiel' : 'format-enligne';
+echo "<div class=\"event-card\" onclick=\"openEventModal('{$event['id']}')\">";
+             echo "<img src=\"{$event['image']}\" alt=\"{$event['titre']}\" class=\"event-image\">";
+             echo "<div class=\"event-content\">";
+             echo "<div class=\"event-header\">";
+             echo "<span class=\"event-type\">{$event['type']}</span>";
+             echo "<span class=\"event-format {$format_class}\">{$event['format']}</span>";
+             echo "</div>";
+             echo "<h3 class=\"event-title\">{$event['titre']}</h3>";
+             echo "<p class=\"event-description\">{$event['description']}</p>";
+             echo "<div class=\"event-details\">";
+             echo "<div class=\"event-detail\"><i class=\"fas fa-calendar\"></i><span>{$event['date']}</span></div>";
+             echo "<div class=\"event-detail\"><i class=\"fas fa-map-marker-alt\"></i><span>{$event['lieu']}</span></div>";
+             echo "<div class=\"event-detail\"><i class=\"fas fa-users\"></i><span>{$event['participants']} participants</span></div>";
+             echo "</div>";
+             echo "<div class=\"event-footer\">";
+             echo "<div class=\"event-rating\"><span>⭐</span><span>{$event['rating']}</span><span style=\"color: #6b7280; font-size: 14px;\">({$event['reviews']} avis)</span></div>";
+             echo "<div class=\"event-price\">{$event['price']}</div>";
+             echo "</div>";
+             echo "</div>";
+             echo "</div>";
+         }
+         ?>
+     </div>
+
+
             </div>
         </div>
     </section>
-
+               
     <!-- Section À propos -->
     <section id="apropos">
         <div class="about-section">
@@ -205,11 +291,17 @@ session_start();
       <input type="password" id="password" name="password" placeholder="Votre mot de passe" required>
 
       <br><br>
-      <button type="submit" class="btn-primary btn-full">S'inscrire</button>
+      <button type="submit" class="btn-primary btn-full">S’inscrire</button>
     </form>
 
   </div>
 </div>
+
+
+
+
+
+  
 
     <!-- Modal de création d'événement -->
     <div id="createEventModal" class="modal">
@@ -304,62 +396,41 @@ session_start();
         </div>
     </div>
 
-
 <div id="eventModal" class="modal">
   <div class="modal-content event-modal">
     <span class="close" onclick="closeModal('eventModal')">&times;</span>
-    
-    <!-- Contenu déroulable ici -->
     <div id="eventModalContent" class="modal-scroll-content">
-        <div id="eventModalContent" class="modal-scroll-content">
-
-      <!-- Les commentaires seront injectés ici dynamiquement -->
+      <!-- Le contenu sera injecté dynamiquement -->
+    </div>
+    <div class="modal-actions">
+      <?php if(isset($_SESSION['user_id'])): ?>
+        <button onclick="reserveEvent()" class="btn-primary">Réserver ma place</button>
+      <?php else: ?>
+        <button onclick="closeModal('eventModal'); openLoginModal();" class="btn-primary">Connectez-vous pour réserver</button>
+      <?php endif; ?>
     </div>
   </div>
 </div>
 
-    <!-- Modal de paiement -->
-    <div id="paymentModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('paymentModal')">&times;</span>
-            <h2>Paiement sécurisé</h2>
-            
-            <div class="payment-summary">
-                <h3 id="paymentEventTitle">Nom de l'événement</h3>
-                <p>Prix: <strong id="paymentPrice">199€</strong></p>
-            </div>
-            
-            <form onsubmit="processPayment(event)">
-                <div class="form-group">
-                    <label for="cardNumber">Numéro de carte</label>
-                    <input type="text" placeholder="1234 5678 9012 3456" maxlength="19" required>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="expiryDate">Date d'expiration</label>
-                        <input type="text" placeholder="MM/AA" maxlength="5" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="cvv">CVV</label>
-                        <input type="text" placeholder="123" maxlength="3" required>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="cardName">Nom sur la carte</label>
-                    <input type="text" placeholder="John Doe" required>
-                </div>
-                
-                <button type="submit" class="btn-primary btn-full">Confirmer le paiement</button>
-            </form>
-        </div>
-    </div>
 
+
+
+
+
+
+
+  
     <!-- Toast notification -->
     <div id="toast" class="toast"></div>
 
-    <!-- Script principal -->
+ 
+     <!-- Embed event data for JavaScript -->
+    <script>
+        const dbEvents = <?php echo json_encode($db_events); ?>;
+    </script>
+
+    <!-- Required Lovable script for new features -->
+    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script src="script.js"></script>
 </body>
 </html>
