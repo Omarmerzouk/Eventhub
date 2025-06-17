@@ -27,11 +27,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit('Email invalide.');
     }
 
-    // Vérifier si l'email existe déjà
-    $stmt = $pdo->prepare("SELECT id FROM utilisateur WHERE email = ?");
+// Vérifier si l'email existe déjà
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM utilisateur WHERE email = ?");
     $stmt->execute([$email]);
-    if ($stmt->fetch()) {
-        exit('Cet email est déjà utilisé.');
+    if ($stmt->fetchColumn() > 0) {
+        header("Location: echoue_inscription.html?error=email_exists");
+        exit;
     }
 
     // Hasher le mot de passe
