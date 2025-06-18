@@ -1,7 +1,4 @@
-* 
-
-
-{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -78,7 +75,15 @@ body {
 .nav-actions {
     display: flex;
     gap: 15px;
+    align-items: center;
 }
+
+.user-welcome {
+    color: #4b5563;
+    font-weight: 500;
+    font-size: 14px;
+}
+
 .notification-bell {
     position: relative;
     margin-right: 10px;
@@ -140,6 +145,7 @@ body {
     cursor: pointer;
     font-weight: 500;
     transition: background 0.3s;
+    text-decoration: none;
 }
 
 .btn-ghost:hover {
@@ -155,6 +161,7 @@ body {
     cursor: pointer;
     font-weight: 500;
     transition: background 0.3s;
+    text-decoration: none;
 }
 
 .btn-primary:hover {
@@ -500,9 +507,6 @@ body {
 }
 
 /* Modals */
-
-
-
 .modal {
   display: none;
   position: fixed;
@@ -526,7 +530,6 @@ body {
   overflow-y: auto; /* Affiche la barre de défilement verticale */
 }
 
-
 .event-modal {
     max-width: 800px;
 }
@@ -535,8 +538,6 @@ body {
   overflow-y: auto;
   padding-right: 20px; /* Pour laisser de la place à la scrollbar */
 }
-
-
 
 .close {
     color: #aaa;
@@ -574,6 +575,57 @@ body {
 .modal input:focus {
     outline: none;
     border-color: #2563eb;
+}
+
+/* Role Selection Styles */
+.role-selection {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin: 15px 0;
+}
+
+.role-option {
+    display: flex;
+    align-items: flex-start;
+    padding: 15px;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.role-option:hover {
+    border-color: #2563eb;
+    background-color: #f8fafc;
+}
+
+.role-option input[type="radio"] {
+    margin-right: 12px;
+    margin-top: 2px;
+}
+
+.role-option input[type="radio"]:checked + .role-info {
+    color: #2563eb;
+}
+
+.role-option:has(input[type="radio"]:checked) {
+    border-color: #2563eb;
+    background-color: #eff6ff;
+}
+
+.role-info strong {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.role-info p {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.4;
 }
 
 /* Payment Modal */
@@ -664,6 +716,15 @@ body {
     
     .nav-menu {
         display: none;
+    }
+    
+    .nav-actions {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .user-welcome {
+        font-size: 12px;
     }
 }
 
@@ -841,6 +902,14 @@ section.active {
     
     .create-event-form {
         max-height: 60vh;
+    }
+    
+    .role-selection {
+        gap: 10px;
+    }
+    
+    .role-option {
+        padding: 12px;
     }
 }
 

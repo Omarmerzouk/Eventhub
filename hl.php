@@ -14,17 +14,23 @@ try {
     die("Erreur de connexion : " . $e->getMessage());
 }
 
-// Traitement du formulaire de création d'événement
+// Vérifier si l'utilisateur est connecté et a le bon rôle pour créer des événements
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["title"])) {
+    // Vérifier que l'utilisateur est connecté et est organisateur
+    if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'organisateur') {
+        header("Location: index.php");
+        exit();
+    }
+    
     $titre = $_POST['title'];
     $description = $_POST['description'];
     $date = $_POST['dateTime'];
     $lieu = $_POST['city'] . ', ' . $_POST['country'];
     $prix = !empty($_POST['price']) ? $_POST['price'] : 0;
-    $organisateur_id = $_SESSION['user_id'] ?? null; // doit être défini à la connexion
+    $organisateur_id = $_SESSION['user_id']; // ID de l'organisateur connecté
     $type = $_POST['category'];
     $format = $_POST['format'];
-    $image = !empty($_POST['imageUrl']) ? $_POST['imageUrl'] : null;
+    $image = !empty($_POST['imageUrl']) ? $_POST['imageUrl'] : 'https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg';
     $date_creation = date('Y-m-d H:i:s');
     
     // Nouveaux champs
@@ -92,24 +98,17 @@ $event_count = count($db_events);
                 <a href="#apropos" class="nav-link" onclick="showSection('apropos')">À propos</a>
             </nav>
             <div class="nav-actions">
-
-
-      <!-- Utilisateur connecté -->
-<div class="notification-bell" onclick="toggleNotifications()">
-    <i class="fas fa-bell"></i>
-    <span class="notification-badge">0</span>
-    <div class="notification-dropdown">
-        <div class="notification-item">
-            <div class="notification-title">Aucune notification</div>
-            <div class="notification-message">Vous n'avez pas de notifications pour le moment.</div>
-        </div>
-    </div>
-</div>
-    <button id="createEventBtn" class="btn-primary" onclick="openCreateEventModal()">➕ Créer un événement</button>
-    <form style="display:inline;" method="post" action="logout.php">
-        <a href="logout.php"><button type="submit" class="btn-ghost">🔓 Se déconnecter</button></a>
-    </form>
-
+                <!-- Affichage conditionnel selon le rôle -->
+                <?php if($_SESSION['user_role'] === 'administrateur'): ?>
+                    <a href="admin.php" class="btn-ghost">🛠️ Administration</a>
+                <?php endif; ?>
+                
+                <?php if($_SESSION['user_role'] === 'organisateur'): ?>
+                    <button id="createEventBtn" class="btn-primary" onclick="openCreateEventModal()">➕ Créer un événement</button>
+                <?php endif; ?>
+                
+                <span class="user-welcome">Bonjour, <?php echo htmlspecialchars($_SESSION['user_name']); ?> (<?php echo ucfirst($_SESSION['user_role']); ?>)</span>
+                <a href="logout.php" class="btn-ghost">🔓 Se déconnecter</a>
             </div>
         </div>
     </header>
@@ -302,7 +301,8 @@ echo "<div class=\"event-card\" onclick=\"openEventModal('{$event['id']}')\">";
         </div>
     </section>
 
-
+<!-- Modal de création d'événement (seulement pour organisateurs) -->
+<?php if($_SESSION['user_role'] === 'organisateur'): ?>
 <div id="createEventModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal('createEventModal')">&times;</span>
@@ -421,11 +421,17 @@ echo "<div class=\"event-card\" onclick=\"openEventModal('{$event['id']}')\">";
         </form>
     </div>
 </div>
+<?php endif; ?>
 
 <div id="eventModal" class="modal">
     <div class="modal-content event-modal">
         <span class="close" onclick="closeModal('eventModal')">&times;</span>
         <div id="eventModalContent"></div>
+        <div class="modal-actions">
+            <?php if($_SESSION['user_role'] === 'utilisateur'): ?>
+                <button onclick="reserveEvent()" class="btn-primary">Réserver ma place</button>
+            <?php endif; ?>
+        </div>
     </div>
 </div>
 
@@ -466,6 +472,7 @@ echo "<div class=\"event-card\" onclick=\"openEventModal('{$event['id']}')\">";
     <!-- Embed event data for JavaScript -->
     <script>
         const dbEvents = <?php echo json_encode($db_events); ?>;
+        const userRole = '<?php echo $_SESSION['user_role']; ?>';
     </script>
 
     <!-- Required Lovable script for new features -->

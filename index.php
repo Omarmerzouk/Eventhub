@@ -1,4 +1,6 @@
 <?php
+session_start(); // Ajouter session_start au début
+
 $host = 'localhost';
 $dbname = 'eventhub';
 $user = 'root';
@@ -53,13 +55,23 @@ $event_count = count($db_events);
                 <a href="#apropos" class="nav-link" onclick="showSection('apropos')">À propos</a>
             </nav>
             <div class="nav-actions">
-
-
-    <!-- Utilisateur non connecté -->
-    <button class="btn-ghost" onclick="openLoginModal()">🔐 Se connecter</button>
-    <button class="btn-primary" onclick="openRegisterModal()">📝 S'inscrire</button>
-
-
+                <?php if(isset($_SESSION['user_id'])): ?>
+                    <!-- Utilisateur connecté -->
+                    <?php if($_SESSION['user_role'] === 'administrateur'): ?>
+                        <a href="admin.php" class="btn-ghost">🛠️ Administration</a>
+                    <?php endif; ?>
+                    
+                    <?php if($_SESSION['user_role'] === 'organisateur'): ?>
+                        <button id="createEventBtn" class="btn-primary" onclick="openCreateEventModal()">➕ Créer un événement</button>
+                    <?php endif; ?>
+                    
+                    <span class="user-welcome">Bonjour, <?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
+                    <a href="logout.php" class="btn-ghost">🔓 Se déconnecter</a>
+                <?php else: ?>
+                    <!-- Utilisateur non connecté -->
+                    <button class="btn-ghost" onclick="openLoginModal()">🔐 Se connecter</button>
+                    <button class="btn-primary" onclick="openRegisterModal()">📝 S'inscrire</button>
+                <?php endif; ?>
             </div>
         </div>
     </header>
@@ -271,16 +283,12 @@ echo "<div class=\"event-card\" onclick=\"openEventModal('{$event['id']}')\">";
     </div>
 </div>
 
-</div>
-
-
-
 <!-- Modal d'inscription -->
 <div id="registerModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closeModal('registerModal')">&times;</span>
     <h2>Inscription</h2>
-<form action="register.php" method="POST">
+    <form action="register.php" method="POST">
       <label for="nom">Nom Prénom :</label>
       <input type="text" id="nom" name="nom" required>
 
@@ -290,25 +298,46 @@ echo "<div class=\"event-card\" onclick=\"openEventModal('{$event['id']}')\">";
       <label for="password">Mot de passe :</label>
       <input type="password" id="password" name="password" placeholder="Votre mot de passe" required>
 
+      <label for="role">Type de compte :</label>
+      <div class="role-selection">
+        <label class="role-option">
+          <input type="radio" name="role" value="utilisateur" required>
+          <div class="role-info">
+            <strong>👤 Utilisateur</strong>
+            <p>Peut réserver et participer aux événements</p>
+          </div>
+        </label>
+        
+        <label class="role-option">
+          <input type="radio" name="role" value="organisateur" required>
+          <div class="role-info">
+            <strong>🎯 Organisateur</strong>
+            <p>Peut créer et gérer des événements</p>
+          </div>
+        </label>
+        
+        <label class="role-option">
+          <input type="radio" name="role" value="administrateur" required>
+          <div class="role-info">
+            <strong>🛠️ Administrateur</strong>
+            <p>Peut gérer tous les événements et utilisateurs</p>
+          </div>
+        </label>
+      </div>
+
       <br><br>
       <button type="submit" class="btn-primary btn-full">S'inscrire</button>
     </form>
-
   </div>
 </div>
 
-
-
-
-
-  
-
-    <!-- Modal de création d'événement -->
+    <!-- Modal de création d'événement (seulement pour organisateurs) -->
+    <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'organisateur'): ?>
     <div id="createEventModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('createEventModal')">&times;</span>
             <h2>Créer un nouvel événement</h2>
-            <form class="create-event-form" onsubmit="createEvent(event)">
+            <form class="create-event-form" action="hl.php" method="POST">
                 <div class="form-section">
                     <h3>Informations générales</h3>
                     <div class="form-group">
@@ -395,6 +424,7 @@ echo "<div class=\"event-card\" onclick=\"openEventModal('{$event['id']}')\">";
             </form>
         </div>
     </div>
+    <?php endif; ?>
 
 <div id="eventModal" class="modal">
   <div class="modal-content event-modal">
@@ -403,30 +433,22 @@ echo "<div class=\"event-card\" onclick=\"openEventModal('{$event['id']}')\">";
       <!-- Le contenu sera injecté dynamiquement -->
     </div>
     <div class="modal-actions">
-      <?php if(isset($_SESSION['user_id'])): ?>
+      <?php if(isset($_SESSION['user_id']) && $_SESSION['user_role'] === 'utilisateur'): ?>
         <button onclick="reserveEvent()" class="btn-primary">Réserver ma place</button>
-      <?php else: ?>
+      <?php elseif(!isset($_SESSION['user_id'])): ?>
         <button onclick="closeModal('eventModal'); openLoginModal();" class="btn-primary">Connectez-vous pour réserver</button>
       <?php endif; ?>
     </div>
   </div>
 </div>
 
-
-
-
-
-
-
-
-  
     <!-- Toast notification -->
     <div id="toast" class="toast"></div>
 
- 
      <!-- Embed event data for JavaScript -->
     <script>
         const dbEvents = <?php echo json_encode($db_events); ?>;
+        const userRole = '<?php echo isset($_SESSION['user_role']) ? $_SESSION['user_role'] : ''; ?>';
     </script>
 
     <!-- Required Lovable script for new features -->

@@ -27,12 +27,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_name'] = $user['nom'];
         $_SESSION['user_email'] = $user['email'];
+        $_SESSION['user_role'] = $user['role']; // Stocker le rôle en session
         
-        // Redirection vers la vraie page d’accueil
-        header('Location: hl.php'); // ← remplace avec ta vraie page
+        // Redirection selon le rôle
+        if ($user['role'] === 'administrateur') {
+            header('Location: admin.php');
+        } else {
+            header('Location: hl.php');
+        }
         exit;
     } else {
-     header("Location: echoue.html");
+        header("Location: echoue.html");
     }
 }
 ?>

@@ -17,9 +17,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nom = trim($_POST['nom']);
     $email = trim($_POST['email']);
     $password = $_POST['password'];
+    $role = $_POST['role']; // Nouveau champ pour le rôle
 
     // Validation des champs
-    if (empty($nom) || empty($email) || empty($password)) {
+    if (empty($nom) || empty($email) || empty($password) || empty($role)) {
         exit('Tous les champs sont requis.');
     }
 
@@ -27,7 +28,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit('Email invalide.');
     }
 
-// Vérifier si l'email existe déjà
+    // Vérifier que le rôle est valide
+    $roles_valides = ['utilisateur', 'organisateur', 'administrateur'];
+    if (!in_array($role, $roles_valides)) {
+        exit('Rôle invalide.');
+    }
+
+    // Vérifier si l'email existe déjà
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM utilisateur WHERE email = ?");
     $stmt->execute([$email]);
     if ($stmt->fetchColumn() > 0) {
@@ -38,9 +45,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Hasher le mot de passe
     $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-    // Insérer l'utilisateur
-    $stmt = $pdo->prepare("INSERT INTO utilisateur (nom, email, password) VALUES (?, ?, ?)");
-    $stmt->execute([$nom, $email, $passwordHash]);
+    // Insérer l'utilisateur avec son rôle
+    $stmt = $pdo->prepare("INSERT INTO utilisateur (nom, email, password, role) VALUES (?, ?, ?, ?)");
+    $stmt->execute([$nom, $email, $passwordHash, $role]);
 
     // Redirection après succès
     header("Location: hl.php");
