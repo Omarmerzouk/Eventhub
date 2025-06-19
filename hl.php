@@ -1,3 +1,4 @@
+
 <?php
 session_start(); // important !
 
@@ -14,35 +15,24 @@ try {
     die("Erreur de connexion : " . $e->getMessage());
 }
 
-// Vérifier si l'utilisateur est connecté et a le bon rôle pour créer des événements
+// Traitement du formulaire de création d'événement
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["title"])) {
-    // Vérifier que l'utilisateur est connecté et est organisateur
-    if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'organisateur') {
-        header("Location: index.php");
-        exit();
-    }
-    
     $titre = $_POST['title'];
     $description = $_POST['description'];
     $date = $_POST['dateTime'];
     $lieu = $_POST['city'] . ', ' . $_POST['country'];
     $prix = !empty($_POST['price']) ? $_POST['price'] : 0;
-    $organisateur_id = $_SESSION['user_id']; // ID de l'organisateur connecté
+    $organisateur_id = $_SESSION['user_id'] ?? null; // doit être défini à la connexion
     $type = $_POST['category'];
     $format = $_POST['format'];
-    $image = !empty($_POST['imageUrl']) ? $_POST['imageUrl'] : 'https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg';
+    $image = !empty($_POST['imageUrl']) ? $_POST['imageUrl'] : null;
     $date_creation = date('Y-m-d H:i:s');
-    
-    // Nouveaux champs
-    $session_info = !empty($_POST['sessionInfo']) ? $_POST['sessionInfo'] : null;
-    $capacite = !empty($_POST['capacity']) ? $_POST['capacity'] : null;
-    $lien_localisation = !empty($_POST['locationLink']) ? $_POST['locationLink'] : null;
 
     // Insertion dans la base
-    $sql = "INSERT INTO evenement (titre, description, date, lieu, prix, organisateur_id, type, format, image, date_creation, session_info, capacite, lien_localisation)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO evenement (titre, description, date, lieu, prix, organisateur_id, type, format, image, date_creation)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([$titre, $description, $date, $lieu, $prix, $organisateur_id, $type, $format, $image, $date_creation, $session_info, $capacite, $lien_localisation]);
+    $stmt->execute([$titre, $description, $date, $lieu, $prix, $organisateur_id, $type, $format, $image, $date_creation]);
 
     // Redirection ou confirmation
     header("Location: hl.php?success=1");
@@ -98,17 +88,24 @@ $event_count = count($db_events);
                 <a href="#apropos" class="nav-link" onclick="showSection('apropos')">À propos</a>
             </nav>
             <div class="nav-actions">
-                <!-- Affichage conditionnel selon le rôle -->
-                <?php if($_SESSION['user_role'] === 'administrateur'): ?>
-                    <a href="admin.php" class="btn-ghost">🛠️ Administration</a>
-                <?php endif; ?>
-                
-                <?php if($_SESSION['user_role'] === 'organisateur'): ?>
-                    <button id="createEventBtn" class="btn-primary" onclick="openCreateEventModal()">➕ Créer un événement</button>
-                <?php endif; ?>
-                
-                <span class="user-welcome">Bonjour, <?php echo htmlspecialchars($_SESSION['user_name']); ?> (<?php echo ucfirst($_SESSION['user_role']); ?>)</span>
-                <a href="logout.php" class="btn-ghost">🔓 Se déconnecter</a>
+
+
+      <!-- Utilisateur connecté -->
+<div class="notification-bell" onclick="toggleNotifications()">
+    <i class="fas fa-bell"></i>
+    <span class="notification-badge">0</span>
+    <div class="notification-dropdown">
+        <div class="notification-item">
+            <div class="notification-title">Aucune notification</div>
+            <div class="notification-message">Vous n'avez pas de notifications pour le moment.</div>
+        </div>
+    </div>
+</div>
+    <button id="createEventBtn" class="btn-primary" onclick="openCreateEventModal()">➕ Créer un événement</button>
+    <form style="display:inline;" method="post" action="logout.php">
+        <a href="logout.php"><button type="submit" class="btn-ghost">🔓 Se déconnecter</button></a>
+    </form>
+
             </div>
         </div>
     </header>
@@ -301,8 +298,7 @@ echo "<div class=\"event-card\" onclick=\"openEventModal('{$event['id']}')\">";
         </div>
     </section>
 
-<!-- Modal de création d'événement (seulement pour organisateurs) -->
-<?php if($_SESSION['user_role'] === 'organisateur'): ?>
+
 <div id="createEventModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal('createEventModal')">&times;</span>
@@ -357,44 +353,19 @@ echo "<div class=\"event-card\" onclick=\"openEventModal('{$event['id']}')\">";
                 <h3>Format de l'événement</h3>
                 <div class="radio-group">
                     <label class="radio-option">
-                        <input type="radio" name="format" value="Présentiel" required onchange="toggleLocationFields()">
+                        <input type="radio" name="format" value="Présentiel" required>
                         <div>
                             <strong>Présentiel</strong>
                             <p>Événement en personne dans un lieu physique</p>
                         </div>
                     </label>
                     <label class="radio-option">
-                        <input type="radio" name="format" value="En ligne" required onchange="toggleLocationFields()">
+                        <input type="radio" name="format" value="En ligne" required>
                         <div>
                             <strong>En ligne</strong>
                             <p>Événement virtuel accessible depuis n'importe où</p>
                         </div>
                     </label>
-                </div>
-            </div>
-
-            <div class="form-section">
-                <h3>Détails de localisation/accès</h3>
-                <div class="form-group">
-                    <label for="locationLink" id="locationLinkLabel">Adresse complète / Lien de connexion *</label>
-                    <input type="text" name="locationLink" id="locationLinkInput" placeholder="Adresse complète ou lien Meet/Zoom" required>
-                    <small id="locationHelpText" class="form-help-text">Pour un événement présentiel, indiquez l'adresse complète. Pour un événement en ligne, indiquez le lien de connexion (Meet, Zoom, etc.)</small>
-                </div>
-            </div>
-
-            <div class="form-section">
-                <h3>Capacité et sessions</h3>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="capacity">Capacité maximale</label>
-                        <input type="number" name="capacity" min="1" placeholder="ex: 50">
-                        <small class="form-help-text">Nombre maximum de participants (optionnel)</small>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="sessionInfo">Informations sur les sessions (optionnel)</label>
-                    <textarea name="sessionInfo" rows="3" placeholder="Décrivez les différentes sessions, ateliers ou parties de votre événement..."></textarea>
-                    <small class="form-help-text">Détaillez le programme, les sessions ou ateliers prévus</small>
                 </div>
             </div>
 
@@ -421,17 +392,11 @@ echo "<div class=\"event-card\" onclick=\"openEventModal('{$event['id']}')\">";
         </form>
     </div>
 </div>
-<?php endif; ?>
 
 <div id="eventModal" class="modal">
     <div class="modal-content event-modal">
         <span class="close" onclick="closeModal('eventModal')">&times;</span>
         <div id="eventModalContent"></div>
-        <div class="modal-actions">
-            <?php if($_SESSION['user_role'] === 'utilisateur'): ?>
-                <button onclick="reserveEvent()" class="btn-primary">Réserver ma place</button>
-            <?php endif; ?>
-        </div>
     </div>
 </div>
 
@@ -472,7 +437,6 @@ echo "<div class=\"event-card\" onclick=\"openEventModal('{$event['id']}')\">";
     <!-- Embed event data for JavaScript -->
     <script>
         const dbEvents = <?php echo json_encode($db_events); ?>;
-        const userRole = '<?php echo $_SESSION['user_role']; ?>';
     </script>
 
     <!-- Required Lovable script for new features -->
