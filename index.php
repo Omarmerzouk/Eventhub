@@ -1,6 +1,4 @@
 <?php
-session_start(); // Ajouter session_start au début
-
 $host = 'localhost';
 $dbname = 'eventhub';
 $user = 'root';
@@ -55,23 +53,13 @@ $event_count = count($db_events);
                 <a href="#apropos" class="nav-link" onclick="showSection('apropos')">À propos</a>
             </nav>
             <div class="nav-actions">
-                <?php if(isset($_SESSION['user_id'])): ?>
-                    <!-- Utilisateur connecté -->
-                    <?php if($_SESSION['user_role'] === 'administrateur'): ?>
-                        <a href="admin.php" class="btn-ghost">🛠️ Administration</a>
-                    <?php endif; ?>
-                    
-                    <?php if($_SESSION['user_role'] === 'organisateur'): ?>
-                        <button id="createEventBtn" class="btn-primary" onclick="openCreateEventModal()">➕ Créer un événement</button>
-                    <?php endif; ?>
-                    
-                    <span class="user-welcome">Bonjour, <?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
-                    <a href="logout.php" class="btn-ghost">🔓 Se déconnecter</a>
-                <?php else: ?>
-                    <!-- Utilisateur non connecté -->
-                    <button class="btn-ghost" onclick="openLoginModal()">🔐 Se connecter</button>
-                    <button class="btn-primary" onclick="openRegisterModal()">📝 S'inscrire</button>
-                <?php endif; ?>
+
+
+    <!-- Utilisateur non connecté -->
+    <button class="btn-ghost" onclick="openLoginModal()">🔐 Se connecter</button>
+    <button class="btn-primary" onclick="openRegisterModal()">📝 S'inscrire</button>
+
+
             </div>
         </div>
     </header>
@@ -233,37 +221,96 @@ echo "<div class=\"event-card\" onclick=\"openEventModal('{$event['id']}')\">";
         </div>
     </section>
                
-    <!-- Section À propos -->
-    <section id="apropos">
-        <div class="about-section">
-            <div class="container">
-                <div class="about-content">
-                    <h2>À propos d'EventHub</h2>
-                    <p>EventHub est la plateforme de référence pour découvrir et participer aux meilleurs événements professionnels et personnels.</p>
-                    <p>Notre mission est de connecter les personnes passionnées et de créer des expériences enrichissantes qui favorisent l'apprentissage, le networking et l'innovation.</p>
-                    <p>Que vous soyez à la recherche de conférences technologiques, de workshops créatifs, ou d'événements de networking, EventHub vous aide à trouver exactement ce que vous cherchez.</p>
+<!-- SECTION À PROPOS -->
+<section id="apropos" class="about-section">
+    <div class="container">
+        <div class="about-content">
+                <h2>À propos d'EventHub</h2>
+                <p>Votre partenaire de confiance pour créer des événements mémorables et connecter les communautés professionnelles.</p>
+            </div>
+            <div class="about-stats">
+                <div class="stat-item">
+                    <h3>🎯 500+</h3>
+                    <p>Événements organisés</p>
                 </div>
-                
-                <div class="features">
-                    <div class="feature">
-                        <i class="fas fa-search"></i>
-                        <h3>Recherche avancée</h3>
-                        <p>Trouvez facilement les événements qui vous intéressent grâce à nos filtres intelligents.</p>
-                    </div>
-                    <div class="feature">
-                        <i class="fas fa-globe"></i>
-                        <h3>Événements internationaux</h3>
-                        <p>Découvrez des événements dans le monde entier, en présentiel ou en ligne.</p>
-                    </div>
-                    <div class="feature">
-                        <i class="fas fa-users"></i>
-                        <h3>Communauté active</h3>
-                        <p>Rejoignez une communauté de professionnels et d'passionnés partageant vos intérêts.</p>
-                    </div>
+                <div class="stat-item">
+                    <h3>👥 50K+</h3>
+                    <p>Participants satisfaits</p>
+                </div>
+                <div class="stat-item">
+                    <h3>🌍 25+</h3>
+                    <p>Villes couvertes</p>
+                </div>
+                <div class="stat-item">
+                    <h3>⭐ 99%</h3>
+                    <p>Taux de satisfaction</p>
                 </div>
             </div>
         </div>
-    </section>
+        <div class="blue-band">
+    <div class="container">
+        <div class="mission-statement">
+            <h2>Notre Mission</h2>
+            <p>EventHub a été créé avec l'ambition de simplifier l'organisation et la participation à des événements. Notre plateforme permet aux organisateurs de créer facilement des événements et aux participants de trouver et réserver leurs places en quelques clics.
+Nous croyons que les événements sont essentiels pour créer des communautés et partager des expériences. C'est pourquoi nous mettons tout en œuvre pour rendre l'accès à ces événements aussi simple que possible.</p>
+        </div>
+        
+    </div>
+</div>
+<div class="values-section">
+    <div class="container">
+        <h2>Nos Valeurs</h2>
+        <div class="values-grid">
+            <div class="value-item">
+                <i class="fas fa-star"></i>
+                <h3>Excellence</h3>
+                <p>Nous visons l'excellence dans chaque aspect de notre service pour offrir une expérience exceptionnelle.</p>
+            </div>
+            <div class="value-item">
+                <i class="fas fa-heart"></i>
+                <h3>Passion</h3>
+                <p>Notre passion pour l'événementiel nous pousse à innover et à nous surpasser continuellement.</p>
+            </div>
+            <div class="value-item">
+                <i class="fas fa-users"></i>
+                <h3>Communauté</h3>
+                <p>Nous créons des liens durables en rassemblant les personnes autour d'intérêts communs.</p>
+            </div>
+            <div class="value-item">
+                <i class="fas fa-lightbulb"></i>
+                <h3>Innovation</h3>
+                <p>L'innovation est au cœur de notre approche pour améliorer constamment l'expérience utilisateur.</p>
+            </div>
+            
+        </div>
+    </div>
+</div>
+        </div>
+        <div class="about-footer-banner">
+    <div class="banner-section">
+        <h4>Nous contacter</h4>
+        <p>Eventhub</p>
+        <p>La plateforme eventhub en ligne pour tous vos événements</p>
+    </div>
+    <div class="banner-section">
+        <h4>Liens rapides</h4>
+<div class="banner-section">
+    <h4>Liens rapides</h4>
+    <p>Accueil</p>
+    <p>Événements</p>
+    <p>À propos</p>
+    <p>Aide</p>
+    <p>FAQ</p>
+    <p>Contact</p>
+    <p>Conditions générales</p>
+</div>
+    </div>
+    <div class="banner-section">
+        <h4>Contact</h4>
+        <p>email: eventhub@gmail.com</p>
+    </div>
+
+</section>
 
   <!-- Modal de connexion -->
 <div id="loginModal" class="modal">
@@ -283,12 +330,16 @@ echo "<div class=\"event-card\" onclick=\"openEventModal('{$event['id']}')\">";
     </div>
 </div>
 
+</div>
+
+
+
 <!-- Modal d'inscription -->
 <div id="registerModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closeModal('registerModal')">&times;</span>
     <h2>Inscription</h2>
-    <form action="register.php" method="POST">
+<form action="register.php" method="POST">
       <label for="nom">Nom Prénom :</label>
       <input type="text" id="nom" name="nom" required>
 
@@ -297,47 +348,26 @@ echo "<div class=\"event-card\" onclick=\"openEventModal('{$event['id']}')\">";
 
       <label for="password">Mot de passe :</label>
       <input type="password" id="password" name="password" placeholder="Votre mot de passe" required>
+   <div>
+      <label for="role">S'inscrire en tant que :</label>
+      <select name="role" id="role" required>
+        <option value="utilisateur">Utilisateur</option>
+        <option value="organisateur">Organisateur</option>
+      </select>
+    </div>
 
-      <label for="role">Type de compte :</label>
-      <div class="role-selection">
-        <label class="role-option">
-          <input type="radio" name="role" value="utilisateur" required>
-          <div class="role-info">
-            <strong>👤 Utilisateur</strong>
-            <p>Peut réserver et participer aux événements</p>
-          </div>
-        </label>
-        
-        <label class="role-option">
-          <input type="radio" name="role" value="organisateur" required>
-          <div class="role-info">
-            <strong>🎯 Organisateur</strong>
-            <p>Peut créer et gérer des événements</p>
-          </div>
-        </label>
-        
-        <label class="role-option">
-          <input type="radio" name="role" value="administrateur" required>
-          <div class="role-info">
-            <strong>🛠️ Administrateur</strong>
-            <p>Peut gérer tous les événements et utilisateurs</p>
-          </div>
-        </label>
-      </div>
-
-      <br><br>
-      <button type="submit" class="btn-primary btn-full">S'inscrire</button>
+      <button type="submit" class="btn-primary btn-full">S’inscrire</button>
     </form>
+
   </div>
 </div>
 
-    <!-- Modal de création d'événement (seulement pour organisateurs) -->
-    <?php if(isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'organisateur'): ?>
+    <!-- Modal de création d'événement -->
     <div id="createEventModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('createEventModal')">&times;</span>
             <h2>Créer un nouvel événement</h2>
-            <form class="create-event-form" action="hl.php" method="POST">
+            <form class="create-event-form" onsubmit="createEvent(event)">
                 <div class="form-section">
                     <h3>Informations générales</h3>
                     <div class="form-group">
@@ -424,7 +454,6 @@ echo "<div class=\"event-card\" onclick=\"openEventModal('{$event['id']}')\">";
             </form>
         </div>
     </div>
-    <?php endif; ?>
 
 <div id="eventModal" class="modal">
   <div class="modal-content event-modal">
@@ -433,22 +462,30 @@ echo "<div class=\"event-card\" onclick=\"openEventModal('{$event['id']}')\">";
       <!-- Le contenu sera injecté dynamiquement -->
     </div>
     <div class="modal-actions">
-      <?php if(isset($_SESSION['user_id']) && $_SESSION['user_role'] === 'utilisateur'): ?>
+      <?php if(isset($_SESSION['user_id'])): ?>
         <button onclick="reserveEvent()" class="btn-primary">Réserver ma place</button>
-      <?php elseif(!isset($_SESSION['user_id'])): ?>
+      <?php else: ?>
         <button onclick="closeModal('eventModal'); openLoginModal();" class="btn-primary">Connectez-vous pour réserver</button>
       <?php endif; ?>
     </div>
   </div>
 </div>
 
+
+
+
+
+
+
+
+  
     <!-- Toast notification -->
     <div id="toast" class="toast"></div>
 
+ 
      <!-- Embed event data for JavaScript -->
     <script>
         const dbEvents = <?php echo json_encode($db_events); ?>;
-        const userRole = '<?php echo isset($_SESSION['user_role']) ? $_SESSION['user_role'] : ''; ?>';
     </script>
 
     <!-- Required Lovable script for new features -->
