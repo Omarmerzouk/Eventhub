@@ -101,7 +101,10 @@ $event_count = count($db_events);
         </div>
     </div>
 </div>
-    <button id="createEventBtn" class="btn-primary" onclick="openCreateEventModal()">➕ Créer un événement</button>
+   <!-- Utilisateur non connecté -->
+<?php if(isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'organisateur'): ?>
+        <button id="createEventBtn" class="btn-primary" onclick="openCreateEventModal()">➕ Créer un événement</button>
+    <?php endif; ?>
     <form style="display:inline;" method="post" action="logout.php">
         <a href="logout.php"><button type="submit" class="btn-ghost">🔓 Se déconnecter</button></a>
     </form>
@@ -266,38 +269,96 @@ echo "<div class=\"event-card\" onclick=\"openEventModal('{$event['id']}')\">";
         </div>
     </section>
 
-    <!-- Section À propos -->
-    <section id="apropos">
-        <div class="about-section">
-            <div class="container">
-                <div class="about-content">
-                    <h2>À propos d'EventHub</h2>
-                    <p>EventHub est la plateforme de référence pour découvrir et participer aux meilleurs événements professionnels et personnels.</p>
-                    <p>Notre mission est de connecter les personnes passionnées et de créer des expériences enrichissantes qui favorisent l'apprentissage, le networking et l'innovation.</p>
-                    <p>Que vous soyez à la recherche de conférences technologiques, de workshops créatifs, ou d'événements de networking, EventHub vous aide à trouver exactement ce que vous cherchez.</p>
+<!-- SECTION À PROPOS -->
+<section id="apropos" class="about-section">
+    <div class="container">
+        <div class="about-content">
+                <h2>À propos d'EventHub</h2>
+                <p>Votre partenaire de confiance pour créer des événements mémorables et connecter les communautés professionnelles.</p>
+            </div>
+            <div class="about-stats">
+                <div class="stat-item">
+                    <h3>🎯 500+</h3>
+                    <p>Événements organisés</p>
                 </div>
-
-                <div class="features">
-                    <div class="feature">
-                        <i class="fas fa-search"></i>
-                        <h3>Recherche avancée</h3>
-                        <p>Trouvez facilement les événements qui vous intéressent grâce à nos filtres intelligents.</p>
-                    </div>
-                    <div class="feature">
-                        <i class="fas fa-globe"></i>
-                        <h3>Événements internationaux</h3>
-                        <p>Découvrez des événements dans le monde entier, en présentiel ou en ligne.</p>
-                    </div>
-                    <div class="feature">
-                        <i class="fas fa-users"></i>
-                        <h3>Communauté active</h3>
-                        <p>Rejoignez une communauté de professionnels et d'passionnés partageant vos intérêts.</p>
-                    </div>
+                <div class="stat-item">
+                    <h3>👥 50K+</h3>
+                    <p>Participants satisfaits</p>
+                </div>
+                <div class="stat-item">
+                    <h3>🌍 25+</h3>
+                    <p>Villes couvertes</p>
+                </div>
+                <div class="stat-item">
+                    <h3>⭐ 99%</h3>
+                    <p>Taux de satisfaction</p>
                 </div>
             </div>
         </div>
-    </section>
+        <div class="blue-band">
+    <div class="container">
+        <div class="mission-statement">
+            <h2>Notre Mission</h2>
+            <p>EventHub a été créé avec l'ambition de simplifier l'organisation et la participation à des événements. Notre plateforme permet aux organisateurs de créer facilement des événements et aux participants de trouver et réserver leurs places en quelques clics.
+Nous croyons que les événements sont essentiels pour créer des communautés et partager des expériences. C'est pourquoi nous mettons tout en œuvre pour rendre l'accès à ces événements aussi simple que possible.</p>
+        </div>
+        
+    </div>
+</div>
+<div class="values-section">
+    <div class="container">
+        <h2>Nos Valeurs</h2>
+        <div class="values-grid">
+            <div class="value-item">
+                <i class="fas fa-star"></i>
+                <h3>Excellence</h3>
+                <p>Nous visons l'excellence dans chaque aspect de notre service pour offrir une expérience exceptionnelle.</p>
+            </div>
+            <div class="value-item">
+                <i class="fas fa-heart"></i>
+                <h3>Passion</h3>
+                <p>Notre passion pour l'événementiel nous pousse à innover et à nous surpasser continuellement.</p>
+            </div>
+            <div class="value-item">
+                <i class="fas fa-users"></i>
+                <h3>Communauté</h3>
+                <p>Nous créons des liens durables en rassemblant les personnes autour d'intérêts communs.</p>
+            </div>
+            <div class="value-item">
+                <i class="fas fa-lightbulb"></i>
+                <h3>Innovation</h3>
+                <p>L'innovation est au cœur de notre approche pour améliorer constamment l'expérience utilisateur.</p>
+            </div>
+            
+        </div>
+    </div>
+</div>
+        </div>
+        <div class="about-footer-banner">
+    <div class="banner-section">
+        <h4>Nous contacter</h4>
+        <p>Eventhub</p>
+        <p>La plateforme eventhub en ligne pour tous vos événements</p>
+    </div>
+    <div class="banner-section">
+        <h4>Liens rapides</h4>
+<div class="banner-section">
+    <h4>Liens rapides</h4>
+    <p>Accueil</p>
+    <p>Événements</p>
+    <p>À propos</p>
+    <p>Aide</p>
+    <p>FAQ</p>
+    <p>Contact</p>
+    <p>Conditions générales</p>
+</div>
+    </div>
+    <div class="banner-section">
+        <h4>Contact</h4>
+        <p>email: eventhub@gmail.com</p>
+    </div>
 
+</section>
 
 <div id="createEventModal" class="modal">
     <div class="modal-content">
@@ -369,7 +430,7 @@ echo "<div class=\"event-card\" onclick=\"openEventModal('{$event['id']}')\">";
                 </div>
             </div>
 
-            <div class="form-section">
+                       <div class="form-section">
                 <h3>Tarification</h3>
                 <div class="form-group">
                     <label for="price">Prix (laisser vide pour gratuit)</label>
