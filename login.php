@@ -19,22 +19,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email']);
     $password = $_POST['password'];
 
+    // Vérification des utilisateurs normaux
     $stmt = $pdo->prepare("SELECT * FROM utilisateur WHERE email = ?");
     $stmt->execute([$email]);
     $user = $stmt->fetch();
-
     if ($user && password_verify($password, $user['password'])) {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_name'] = $user['nom'];
         $_SESSION['user_email'] = $user['email'];
-        $_SESSION['user_role'] = $user['role']; // Stocker le rôle en session
-        
-        // Redirection selon le rôle
-        if ($user['role'] === 'administrateur') {
-            header('Location: admin.php');
-        } else {
-            header('Location: hl.php');
-        }
+        $_SESSION['user_type'] = $user['type'];
+        header('Location: hl.php');
         exit;
     } else {
         header("Location: echoue.html");
